@@ -244,7 +244,7 @@ try {
             $pdo->beginTransaction();
             $insertProduct = $pdo->prepare('
                 INSERT INTO products
-                    (category_id, title, slug, description, price, whatsapp_number, is_active, badge_status, publish_at, view_count, telegram_click_count, created_at, updated_at)
+                    (category_id, title, slug, description, price, whatsapp_number, is_active, badge_status, publish_at, view_count, telegram_click_count, createdAt, updatedAt)
                 VALUES
                     (:category_id, :title, :slug, :description, :price, :whatsapp_number, :is_active, :badge_status, :publish_at, 0, 0, NOW(), NOW())
             ');
@@ -261,7 +261,7 @@ try {
             ]);
 
             $productId = (int) $pdo->lastInsertId();
-            $insertImage = $pdo->prepare('INSERT INTO product_images (product_id, image_path, sort_order, created_at) VALUES (:product_id, :image_path, :sort_order, NOW())');
+            $insertImage = $pdo->prepare('INSERT INTO product_images (product_id, image_path, sort_order, createdAt) VALUES (:product_id, :image_path, :sort_order, NOW())');
             foreach ($savedUploads as $item) {
                 $insertImage->execute([
                     'product_id' => $productId,
@@ -362,7 +362,7 @@ try {
                     is_active = :is_active,
                     badge_status = :badge_status,
                     publish_at = :publish_at,
-                    updated_at = NOW()
+                    updatedAt = NOW()
                 WHERE id = :id
             ');
             $update->execute([
@@ -387,7 +387,7 @@ try {
             }
 
             if ($savedUploads !== []) {
-                $insertImage = $pdo->prepare('INSERT INTO product_images (product_id, image_path, sort_order, created_at) VALUES (:product_id, :image_path, :sort_order, NOW())');
+                $insertImage = $pdo->prepare('INSERT INTO product_images (product_id, image_path, sort_order, createdAt) VALUES (:product_id, :image_path, :sort_order, NOW())');
                 foreach ($savedUploads as $item) {
                     $insertImage->execute([
                         'product_id' => $id,
@@ -449,7 +449,7 @@ try {
 
     if (preg_match('#^/admin/products/(\d+)/toggle$#', $path, $m) && $method === 'POST') {
         $id = (int) $m[1];
-        $stmt = $pdo->prepare('UPDATE products SET is_active = CASE WHEN is_active = 1 THEN 0 ELSE 1 END, updated_at = NOW() WHERE id = :id');
+        $stmt = $pdo->prepare('UPDATE products SET is_active = CASE WHEN is_active = 1 THEN 0 ELSE 1 END, updatedAt = NOW() WHERE id = :id');
         $stmt->execute(['id' => $id]);
 
         if ($stmt->rowCount() < 1) {
@@ -480,7 +480,7 @@ try {
         }
 
         $slug = unique_category_slug($pdo, $name);
-        $stmt = $pdo->prepare('INSERT INTO categories (name, slug, created_at) VALUES (:name, :slug, NOW())'); 
+        $stmt = $pdo->prepare('INSERT INTO categories (name, slug, createdAt) VALUES (:name, :slug, NOW())');
         $stmt->execute([
             'name' => $name,
             'slug' => $slug,

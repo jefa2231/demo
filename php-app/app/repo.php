@@ -41,7 +41,7 @@ if (!function_exists('redirect_local')) {
 
     function query_admin_categories(PDO $pdo): array
     {
-        $sql = 'SELECT id, name, slug, created_at FROM categories ORDER BY created_at DESC';
+        $sql = 'SELECT id, name, slug, createdAt FROM categories ORDER BY createdAt DESC';
         return $pdo->query($sql)->fetchAll() ?: [];
     }
 
@@ -63,7 +63,7 @@ if (!function_exists('redirect_local')) {
             LEFT JOIN categories c ON c.id = p.category_id
             WHERE p.is_active = 1
               AND (p.publish_at IS NULL OR p.publish_at <= NOW())
-            ORDER BY p.created_at DESC
+            ORDER BY p.createdAt DESC
             LIMIT :limit
         ';
 
@@ -105,7 +105,7 @@ if (!function_exists('redirect_local')) {
         $totalPages = $totalProducts > 0 ? (int) ceil($totalProducts / $perPage) : 1;
         $currentPage = max(1, min($requestedPage, $totalPages));
         $offset = ($currentPage - 1) * $perPage;
-        $orderSql = $sort === 'oldest' ? 'p.created_at ASC' : 'p.created_at DESC';
+        $orderSql = $sort === 'oldest' ? 'p.createdAt ASC' : 'p.createdAt DESC';
 
         $listSql = "
             SELECT
@@ -310,7 +310,7 @@ if (!function_exists('redirect_local')) {
             FROM products p
             LEFT JOIN categories c ON c.id = p.category_id
             WHERE ' . implode(' AND ', $whereParts) . '
-            ORDER BY p.created_at DESC
+            ORDER BY p.createdAt DESC
             LIMIT 40
         ';
 
@@ -353,7 +353,7 @@ if (!function_exists('redirect_local')) {
             SELECT id, title, slug, view_count, telegram_click_count, badge_status, publish_at
             FROM products
             WHERE is_active = 1
-            ORDER BY telegram_click_count DESC, view_count DESC, created_at DESC
+            ORDER BY telegram_click_count DESC, view_count DESC, createdAt DESC
             LIMIT 8
         ';
 
@@ -409,7 +409,7 @@ if (!function_exists('redirect_local')) {
                 ) AS image_total
             FROM products p
             LEFT JOIN categories c ON c.id = p.category_id
-            ORDER BY p.created_at DESC
+            ORDER BY p.createdAt DESC
         ';
 
         return $pdo->query($sql)->fetchAll() ?: [];

@@ -334,7 +334,7 @@ if (!function_exists('cfg')) {
 
         $sameCategory = (int) ($source['category_id'] ?? 0) === (int) ($candidate['category_id'] ?? 0);
         $recency = 0;
-        $candidateCreated = strtotime((string) ($candidate['created_at'] ?? ''));
+        $candidateCreated = strtotime((string) ($candidate['createdAt'] ?? ''));
         if ($candidateCreated !== false) {
             $days = (int) floor((time() - $candidateCreated) / 86400);
             $recency = max(0, 10 - $days);
@@ -345,7 +345,7 @@ if (!function_exists('cfg')) {
 
     function attach_product_meta(array $row): array
     {
-        $row['is_new'] = is_new_product($row['created_at'] ?? null);
+        $row['is_new'] = is_new_product($row['createdAt'] ?? null);
         $badge = badge_meta((string) ($row['badge_status'] ?? 'none'), (bool) $row['is_new']);
         $row['badge_label'] = $badge['label'] ?? '';
         $row['badge_class'] = $badge['class'] ?? '';
