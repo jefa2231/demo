@@ -1,0 +1,34 @@
+<section class="space-y-3">
+  <h1 class="text-base font-semibold">Kategori</h1>
+
+  <?php if (!empty($errorMessage)): ?>
+  <p class="text-sm rounded-xl border border-red-500/30 bg-red-500/10 px-3 py-2 text-red-300"><?= e((string) $errorMessage) ?></p>
+  <?php endif; ?>
+  <?php if (!empty($successMessage)): ?>
+  <p class="text-sm rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-emerald-300"><?= e((string) $successMessage) ?></p>
+  <?php endif; ?>
+
+  <form action="<?= e(local_url('/admin/categories')) ?>" method="post" class="rounded-2xl border border-white/10 bg-slate-900 p-4 flex flex-col sm:flex-row gap-2">
+    <input name="name" type="text" required placeholder="Nama kategori" class="w-full rounded-xl bg-slate-950 border border-white/10 px-3 py-3 text-sm text-slate-100 outline-none focus:border-emerald-500/60" />
+    <button type="submit" class="rounded-xl bg-emerald-500 text-black py-3 px-4 text-sm font-semibold hover:bg-emerald-400">Tambah</button>
+  </form>
+
+  <?php if (empty($categories)): ?>
+  <div class="rounded-2xl border border-white/10 bg-slate-900 p-4 text-sm text-slate-300">Belum ada kategori.</div>
+  <?php else: ?>
+  <div class="space-y-2">
+    <?php foreach ($categories as $category): ?>
+    <article class="rounded-2xl border border-white/10 bg-slate-900 p-3 flex flex-col sm:flex-row gap-2 sm:items-center sm:justify-between">
+      <form action="<?= e(local_url('/admin/categories/' . (int) ($category['id'] ?? 0))) ?>" method="post" class="flex gap-2 w-full">
+        <input name="name" value="<?= e((string) ($category['name'] ?? '')) ?>" required class="w-full rounded-xl bg-slate-950 border border-white/10 px-3 py-2 text-sm text-slate-100 outline-none focus:border-emerald-500/60" />
+        <button type="submit" class="rounded-lg bg-white/10 px-3 py-2 text-xs">Update</button>
+      </form>
+      <form action="<?= e(local_url('/admin/categories/' . (int) ($category['id'] ?? 0) . '/delete')) ?>" method="post" data-confirm-delete="Hapus kategori ini?">
+        <button type="submit" class="rounded-lg bg-red-500/20 text-red-200 px-3 py-2 text-xs">Hapus</button>
+      </form>
+    </article>
+    <?php endforeach; ?>
+  </div>
+  <?php endif; ?>
+</section>
+

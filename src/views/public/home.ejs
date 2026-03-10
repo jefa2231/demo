@@ -1,0 +1,80 @@
+<section class="space-y-5">
+  <article class="surface rounded-3xl p-4" data-reveal data-reveal-delay="40">
+    <p class="text-[11px] uppercase tracking-[0.16em] text-emerald-300">Store Catalog</p>
+    <h1 class="mt-2 text-[1.45rem] font-semibold leading-tight">Tampilan produk yang rapi, ringan, dan siap order cepat.</h1>
+    <p class="mt-2 text-sm text-slate-300 leading-relaxed">Klik produk, lihat detail foto portrait, lalu lanjut checkout cepat via Telegram.</p>
+    <a href="/katalog" class="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-emerald-500 px-3.5 py-2 text-sm font-semibold text-black hover:bg-emerald-400 transition" data-ripple>
+      <span>Lihat Katalog</span>
+      <%- include('../partials/icon', { name: 'arrow-right', size: 14, strokeWidth: 2 }) %>
+    </a>
+  </article>
+
+  <section class="space-y-2" data-reveal data-reveal-delay="80">
+    <div class="flex items-center justify-between">
+      <h2 class="section-title">
+        <%- include('../partials/icon', { name: 'category', size: 15 }) %>
+        <span>Pilihan Kategori</span>
+      </h2>
+      <a href="/katalog" class="text-xs text-emerald-300 hover:text-emerald-200">Semua</a>
+    </div>
+
+    <div class="no-scrollbar flex gap-2 overflow-x-auto pb-1">
+      <% if (categories && categories.length > 0) { %>
+        <% categories.forEach((category) => { %>
+        <a href="/katalog?category=<%= category.slug %>" class="chip">
+          <%- include('../partials/icon', { name: 'category', size: 13 }) %>
+          <span><%= category.name %></span>
+          <span class="text-slate-400">(<%= category.total %>)</span>
+        </a>
+        <% }) %>
+      <% } else { %>
+      <p class="text-xs text-slate-400">Belum ada kategori aktif.</p>
+      <% } %>
+    </div>
+  </section>
+
+  <section class="space-y-2" data-reveal data-reveal-delay="120">
+    <div class="flex items-center justify-between">
+      <h2 class="section-title">
+        <%- include('../partials/icon', { name: 'products', size: 15 }) %>
+        <span>Semua Produk</span>
+      </h2>
+      <a href="/katalog" class="text-xs text-emerald-300 hover:text-emerald-200">Explore</a>
+    </div>
+
+    <% if (!featuredProducts || featuredProducts.length === 0) { %>
+    <div class="rounded-2xl bg-slate-900 border border-white/10 p-4 text-sm text-slate-300">Produk belum tersedia.</div>
+    <% } else { %>
+    <div class="grid grid-cols-2 gap-3" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem;">
+      <% featuredProducts.forEach((product, idx) => { %>
+      <article class="product-card rounded-2xl overflow-hidden border border-white/10 bg-slate-900/85" data-reveal data-reveal-delay="<%= (idx % 8) * 45 %>">
+        <a href="/p/<%= product.slug %>" class="relative block aspect-[9/16] bg-black/20">
+          <% if (product.badgeLabel) { %>
+          <span class="badge-chip <%= product.badgeClass %> absolute left-2 top-2 z-10"><%= product.badgeLabel %></span>
+          <% } %>
+          <% if (product.images && product.images[0]) { %>
+          <img src="<%= product.images[0].imagePath %>" alt="<%= product.title %>" loading="lazy" class="h-full w-full object-contain bg-black" />
+          <% } else { %>
+          <div class="h-full w-full flex items-center justify-center text-xs text-slate-400">No Image</div>
+          <% } %>
+        </a>
+
+        <div class="p-2.5 space-y-1.5">
+          <h3 class="text-sm font-semibold leading-snug min-h-[2.4rem] overflow-hidden"><%= product.title %></h3>
+          <div class="grid grid-cols-2 gap-1.5">
+            <a href="/p/<%= product.slug %>" class="action-btn action-btn-main" data-ripple>
+              <%- include('../partials/icon', { name: 'detail', size: 13 }) %>
+              <span>Detail</span>
+            </a>
+            <a href="<%= product.tgTrackUrl || product.tgUrl %>" target="_blank" rel="noopener noreferrer" class="action-btn action-btn-ghost" data-ripple>
+              <%- include('../partials/icon', { name: 'telegram', size: 13 }) %>
+              <span>TG</span>
+            </a>
+          </div>
+        </div>
+      </article>
+      <% }) %>
+    </div>
+    <% } %>
+  </section>
+</section>

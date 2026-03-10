@@ -1,0 +1,6 @@
+<section class="rounded-2xl border border-white/10 bg-slate-900 p-4 space-y-2">
+  <h1 class="text-base font-semibold">Terjadi Error</h1>
+  <p class="text-sm text-slate-300"><?= e((string) ($errorMessage ?? 'Terjadi kesalahan.')) ?></p>
+  <a href="<?= e(local_url('/')) ?>" class="text-xs text-emerald-400">Kembali ke beranda</a>
+</section>
+

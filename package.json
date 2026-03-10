@@ -1,0 +1,42 @@
+{
+  "name": "jestore",
+  "version": "1.0.0",
+  "description": "Store website + admin panel",
+  "main": "app.js",
+  "scripts": {
+    "dev": "concurrently \"nodemon app.js\" \"tailwindcss -i ./src/public/css/input.css -o ./src/public/css/app.css --watch\"",
+    "start": "node app.js",
+    "build": "tailwindcss -i ./src/public/css/input.css -o ./src/public/css/app.css --minify",
+    "db:init": "node scripts/init-db.js",
+    "migrate": "node scripts/migrate.js",
+    "seed:admin": "node scripts/seed-admin.js",
+    "setup:local": "npm run db:init && npm run migrate && npm run seed:admin",
+    "setup:cpanel": "npm run migrate && npm run seed:admin"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "compression": "^1.8.1",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^16.6.1",
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "method-override": "^3.0.0",
+    "multer": "^2.0.2",
+    "mysql2": "^3.15.3",
+    "sequelize": "^6.37.7",
+    "sharp": "^0.34.4",
+    "slugify": "^1.6.6"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.21",
+    "concurrently": "^9.2.1",
+    "nodemon": "^3.1.10",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.18"
+  }
+}

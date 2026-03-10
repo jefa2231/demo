@@ -1,0 +1,13 @@
+<IfModule mod_rewrite.c>
+RewriteEngine On
+
+# Jika file/folder nyata, langsung sajikan
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Selain itu arahkan ke front controller
+RewriteRule ^ index.php [L,QSA]
+</IfModule>
+
+DirectoryIndex index.php

@@ -1,0 +1,102 @@
+<section class="space-y-3">
+  <%
+  const publishDate = product.publishAt ? new Date(product.publishAt) : null;
+  const pad2 = (value) => String(value).padStart(2, "0");
+  const publishAtValue = publishDate
+    ? `${publishDate.getFullYear()}-${pad2(publishDate.getMonth() + 1)}-${pad2(publishDate.getDate())}T${pad2(publishDate.getHours())}:${pad2(publishDate.getMinutes())}`
+    : "";
+  const selectedBadge = product.badgeStatus || "none";
+  %>
+  <div class="flex items-center justify-between">
+    <h1 class="text-base font-semibold"><%= mode === 'create' ? 'Tambah Produk' : 'Edit Produk' %></h1>
+    <a href="/admin/products" class="text-xs text-slate-300">Kembali</a>
+  </div>
+
+  <% if (errorMessage) { %>
+  <p class="text-sm rounded-xl border border-red-500/30 bg-red-500/10 px-3 py-2 text-red-300"><%= errorMessage %></p>
+  <% } %>
+  <% if (successMessage) { %>
+  <p class="text-sm rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-emerald-300"><%= successMessage %></p>
+  <% } %>
+
+  <form action="<%= mode === 'create' ? '/admin/products' : '/admin/products/' + product.id %>" method="post" enctype="multipart/form-data" class="rounded-2xl border border-white/10 bg-slate-900 p-4 space-y-3">
+    <div class="space-y-1">
+      <label class="text-xs text-slate-300" for="title">Title</label>
+      <input id="title" name="title" type="text" required value="<%= product.title || '' %>" class="w-full rounded-xl bg-slate-950 border border-white/10 px-3 py-3 text-sm text-slate-100 outline-none focus:border-emerald-500/60" />
+    </div>
+
+    <div class="space-y-1">
+      <label class="text-xs text-slate-300" for="categoryId">Kategori</label>
+      <select id="categoryId" name="categoryId" required class="w-full rounded-xl bg-slate-950 border border-white/10 px-3 py-3 text-sm text-slate-100 outline-none focus:border-emerald-500/60">
+        <option value="">Pilih kategori</option>
+        <% categories.forEach((category) => { %>
+        <option value="<%= category.id %>" <%= Number(product.categoryId) === Number(category.id) ? 'selected' : '' %>><%= category.name %></option>
+        <% }) %>
+      </select>
+    </div>
+    <input type="hidden" name="price" value="0" />
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div class="space-y-1">
+        <label class="text-xs text-slate-300" for="badgeStatus">Badge Status</label>
+        <select id="badgeStatus" name="badgeStatus" class="w-full rounded-xl bg-slate-950 border border-white/10 px-3 py-3 text-sm text-slate-100 outline-none focus:border-emerald-500/60">
+          <option value="none" <%= selectedBadge === 'none' ? 'selected' : '' %>>Tanpa Badge</option>
+          <option value="hot" <%= selectedBadge === 'hot' ? 'selected' : '' %>>Hot</option>
+          <option value="ready" <%= selectedBadge === 'ready' ? 'selected' : '' %>>Ready</option>
+          <option value="limited" <%= selectedBadge === 'limited' ? 'selected' : '' %>>Limited</option>
+          <option value="new" <%= selectedBadge === 'new' ? 'selected' : '' %>>New</option>
+        </select>
+      </div>
+      <div class="space-y-1">
+        <label class="text-xs text-slate-300" for="publishAt">Jadwal Publish</label>
+        <input
+          id="publishAt"
+          name="publishAt"
+          type="datetime-local"
+          value="<%= publishAtValue %>"
+          class="w-full rounded-xl bg-slate-950 border border-white/10 px-3 py-3 text-sm text-slate-100 outline-none focus:border-emerald-500/60"
+        />
+        <p class="text-[11px] text-slate-400">Kosongkan jika ingin langsung tayang.</p>
+      </div>
+    </div>
+
+    <div class="space-y-1">
+      <label class="text-xs text-slate-300" for="whatsappNumber">Link/Username Telegram</label>
+      <input id="whatsappNumber" name="whatsappNumber" type="text" placeholder="contoh: t.me/jefa14 atau @jefa14" value="<%= product.whatsappNumber || '' %>" class="w-full rounded-xl bg-slate-950 border border-white/10 px-3 py-3 text-sm text-slate-100 outline-none focus:border-emerald-500/60" />
+    </div>
+
+    <div class="space-y-1">
+      <label class="text-xs text-slate-300" for="description">Deskripsi</label>
+      <textarea id="description" name="description" rows="5" class="w-full rounded-xl bg-slate-950 border border-white/10 px-3 py-3 text-sm text-slate-100 outline-none focus:border-emerald-500/60"><%= product.description || '' %></textarea>
+    </div>
+
+    <div class="space-y-2">
+      <label class="text-xs text-slate-300" for="images">Upload Gambar (JPG/PNG/WEBP, max 10 file)</label>
+      <input id="images" name="images" type="file" accept="image/jpeg,image/png,image/webp" multiple <%= mode === 'create' ? 'required' : '' %> class="w-full rounded-xl bg-slate-950 border border-white/10 px-3 py-3 text-sm text-slate-100 outline-none focus:border-emerald-500/60" />
+
+      <% if (mode === 'edit' && product.images && product.images.length > 0) { %>
+      <p class="text-xs text-slate-300">Centang gambar yang ingin dihapus:</p>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <% product.images.forEach((img) => { %>
+        <label class="space-y-1 text-xs">
+          <div class="aspect-[9/16] rounded-lg overflow-hidden border border-white/10 bg-black/30">
+            <img src="<%= img.imagePath %>" alt="image" class="h-full w-full object-contain bg-black" />
+          </div>
+          <span class="flex items-center gap-1">
+            <input type="checkbox" name="removeImageIds" value="<%= img.id %>" /> Hapus
+          </span>
+        </label>
+        <% }) %>
+      </div>
+      <% } %>
+    </div>
+
+    <label class="inline-flex items-center gap-2 text-sm text-slate-200">
+      <input type="checkbox" name="isActive" <%= product.isActive ? 'checked' : '' %> /> Produk aktif
+    </label>
+
+    <button type="submit" class="w-full rounded-xl bg-emerald-500 text-black py-3 text-sm font-semibold hover:bg-emerald-400 active:scale-[0.99] transition">
+      <%= mode === 'create' ? 'Simpan Produk' : 'Update Produk' %>
+    </button>
+  </form>
+</section>

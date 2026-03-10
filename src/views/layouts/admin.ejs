@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= title %> | Admin</title>
+    <link rel="stylesheet" href="/css/app.css" />
+  </head>
+  <body class="bg-slate-950 text-slate-100 min-h-screen">
+    <div class="mx-auto max-w-6xl px-4 py-4 space-y-4">
+      <header class="rounded-2xl border border-white/10 bg-slate-900/80 p-3 flex items-center justify-between gap-3">
+        <div>
+          <p class="text-sm font-semibold">Admin Panel</p>
+          <% if (currentAdmin) { %>
+          <p class="text-xs text-slate-300">@<%= currentAdmin.username %></p>
+          <% } %>
+        </div>
+        <nav class="flex items-center gap-2 text-xs">
+          <% if (currentAdmin) { %>
+          <a class="rounded-lg px-2 py-1 <%= currentPath === '/admin' ? 'bg-emerald-500 text-black' : 'bg-white/10 text-slate-200' %>" href="/admin">Dashboard</a>
+          <a class="rounded-lg px-2 py-1 <%= currentPath.startsWith('/admin/products') ? 'bg-emerald-500 text-black' : 'bg-white/10 text-slate-200' %>" href="/admin/products">Produk</a>
+          <a class="rounded-lg px-2 py-1 <%= currentPath.startsWith('/admin/categories') ? 'bg-emerald-500 text-black' : 'bg-white/10 text-slate-200' %>" href="/admin/categories">Kategori</a>
+          <form action="/admin/logout" method="post">
+            <button class="rounded-lg px-2 py-1 bg-white/10 text-slate-200 hover:bg-white/20" type="submit">Logout</button>
+          </form>
+          <% } %>
+        </nav>
+      </header>
+
+      <%- include('../' + view) %>
+    </div>
+
+    <script src="/js/app.js"></script>
+  </body>
+</html>
