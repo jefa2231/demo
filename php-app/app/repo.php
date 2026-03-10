@@ -471,8 +471,8 @@ if (!function_exists('redirect_local')) {
             return [];
         }
 
-        if (count($uploadedFiles) > 10) {
-            throw new RuntimeException('Maksimal 10 gambar per produk.');
+        if (count($uploadedFiles) > 50) {
+            throw new RuntimeException('Maksimal 50 gambar per produk.');
         }
 
         $uploadDir = cfg('public_dir') . '/uploads/products';

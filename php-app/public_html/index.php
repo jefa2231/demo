@@ -217,6 +217,15 @@ try {
     }
 
     if ($path === '/admin/products' && $method === 'POST') {
+        if (empty($_POST) && empty($_FILES) && isset($_SERVER['CONTENT_LENGTH']) && (int) $_SERVER['CONTENT_LENGTH'] > 0) {
+            render_admin_product_form('create', [
+                'id' => null, 'title' => '', 'description' => '', 'category_id' => 0,
+                'price' => 0, 'badge_status' => 'none', 'publish_at' => null,
+                'whatsapp_number' => cfg('telegram_default'), 'is_active' => 1, 'images' => [],
+            ], 'Upload gagal: ukuran file terlalu besar. Kurangi jumlah atau ukuran gambar.');
+            exit;
+        }
+
         $payload = parse_product_input();
         $uploadedFiles = normalize_upload_files($_FILES['images'] ?? []);
 
@@ -298,6 +307,11 @@ try {
         $product = query_admin_product_by_id($pdo, $id);
         if (!$product) {
             redirect_local('/admin/products?error=' . rawurlencode('Produk tidak ditemukan'));
+        }
+
+        if (empty($_POST) && empty($_FILES) && isset($_SERVER['CONTENT_LENGTH']) && (int) $_SERVER['CONTENT_LENGTH'] > 0) {
+            render_admin_product_form('edit', $product, 'Upload gagal: ukuran file terlalu besar. Kurangi jumlah atau ukuran gambar.');
+            exit;
         }
 
         $payload = parse_product_input();

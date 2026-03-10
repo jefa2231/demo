@@ -68,7 +68,7 @@ $images = $product['images'] ?? [];
     </div>
 
     <div class="space-y-2">
-      <label class="text-xs text-slate-300" for="images">Upload Gambar (JPG/PNG/WEBP, max 10 file)</label>
+      <label class="text-xs text-slate-300" for="images">Upload Gambar (JPG/PNG/WEBP, max 50 file)</label>
       <input id="images" name="images[]" type="file" accept="image/jpeg,image/png,image/webp" multiple <?= $isCreate ? 'required' : '' ?> class="w-full rounded-xl bg-slate-950 border border-white/10 px-3 py-3 text-sm text-slate-100 outline-none focus:border-emerald-500/60" />
 
       <?php if (!$isCreate && !empty($images)): ?>
