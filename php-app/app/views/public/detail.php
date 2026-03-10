@@ -158,7 +158,7 @@ $safeTgUrl = trim((string) ($tgTrackUrl ?? ($product['tg_track_url'] ?? '#')));
       <a href="<?= e(local_url('/p/' . (string) ($item['slug'] ?? ''))) ?>" class="product-card overflow-hidden rounded-xl border border-white/10 bg-slate-900/85" data-reveal data-reveal-delay="<?= (int) (($idx % 8) * 45) ?>">
         <div class="aspect-[9/16] bg-black/30 p-1.5">
           <?php if (!empty($item['image_path'])): ?>
-          <img src="<?= e((string) $item['image_path']) ?>" alt="<?= e((string) ($item['title'] ?? 'Produk')) ?>" class="h-full w-full object-contain" />
+          <img src="<?= e((string) $item['image_path']) ?>" alt="<?= e((string) ($item['title'] ?? 'Produk')) ?>" loading="lazy" decoding="async" class="h-full w-full object-contain" />
           <?php else: ?>
           <div class="flex h-full w-full items-center justify-center text-xs text-slate-400">No Image</div>
           <?php endif; ?>

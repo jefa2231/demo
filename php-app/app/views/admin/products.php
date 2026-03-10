@@ -50,12 +50,12 @@ $nowTs = time();
         </div>
 
         <p class="text-xs text-slate-300"><?= e((string) ($product['category_name'] ?? 'Tanpa kategori')) ?></p>
-        <p class="text-xs text-slate-300">Views <?= $views ?> ? Klik TG <?= $clicks ?> ? CTR <?= number_format($ctr, 1) ?>%</p>
+        <p class="text-xs text-slate-300">Views <?= $views ?> · Klik TG <?= $clicks ?> · CTR <?= number_format($ctr, 1) ?>%</p>
         <p class="text-xs <?= $isScheduled ? 'text-cyan-300' : 'text-slate-400' ?>">
           <?= $isScheduled ? ('Terjadwal ' . date('d M Y H:i', $publishTs)) : 'Publish: langsung / sudah tayang' ?>
         </p>
         <p class="text-xs <?= (int) ($product['is_active'] ?? 0) === 1 ? 'text-emerald-300' : 'text-amber-300' ?>">
-          <?= (int) ($product['is_active'] ?? 0) === 1 ? 'Aktif' : 'Nonaktif' ?> ? <?= (int) ($product['image_total'] ?? 0) ?> gambar
+          <?= (int) ($product['is_active'] ?? 0) === 1 ? 'Aktif' : 'Nonaktif' ?> · <?= (int) ($product['image_total'] ?? 0) ?> gambar
         </p>
 
         <div class="flex flex-wrap gap-2 pt-1">

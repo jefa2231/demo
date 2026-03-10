@@ -20,7 +20,7 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
 
 $config = [
     'root_dir' => $rootDir,
-    'public_dir' => $rootDir . '/public',
+    'public_dir' => $rootDir . '/public_html',
     'app_name' => env_value('APP_NAME', 'JeStore') ?? 'JeStore',
     'telegram_default' => env_value('TELEGRAM_DEFAULT', 't.me/jefa14') ?? 't.me/jefa14',
     'admin_cookie_name' => env_value('ADMIN_COOKIE_NAME', 'admin_session') ?? 'admin_session',

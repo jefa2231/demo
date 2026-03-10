@@ -82,7 +82,7 @@ $selectedSlug = (string) ($selectedCategorySlug ?? '');
           <span class="badge-chip <?= e((string) $product['badge_class']) ?> absolute left-2 top-2 z-10"><?= e((string) $product['badge_label']) ?></span>
           <?php endif; ?>
           <?php if (!empty($product['image_path'])): ?>
-          <img src="<?= e((string) $product['image_path']) ?>" alt="<?= e((string) ($product['title'] ?? 'Produk')) ?>" loading="lazy" class="h-full w-full object-contain bg-black" />
+          <img src="<?= e((string) $product['image_path']) ?>" alt="<?= e((string) ($product['title'] ?? 'Produk')) ?>" loading="lazy" decoding="async" class="h-full w-full object-contain bg-black" />
           <?php else: ?>
           <div class="h-full w-full flex items-center justify-center text-xs text-slate-400">No Image</div>
           <?php endif; ?>

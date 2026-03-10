@@ -1,33 +1,26 @@
-Berikut **PRD ulang (AI Codex–friendly)** + **Tailwind UI Design System** + **ERD Diagram** (pakai Mermaid, jadi Codex bisa langsung generate DB & relasi).
-
----
-
-# `prd.md`
+# JeStore — Product Requirements Document
 
 ## 0. Metadata
 
-* **Project:** Store Website + Admin Panel (Clone style `store.lazacloud.my.id`)
+* **Project:** JeStore — Katalog Produk Digital + Admin Panel
 * **Owner:** Je Store
-* **Priority:** **Mobile-first** (desktop tetap bagus tapi secondary)
-* **Deploy Target:** cPanel (NodeJS App) + MySQL lokal (phpMyAdmin)
-* **Runtime:** Node.js 18+ (php81/php82 tidak jadi constraint karena app Node)
+* **Priority:** **Mobile-first** (max-width 480px, desktop tetap rapi)
+* **Deploy:** cPanel shared hosting (PHP + MySQL)
+* **Runtime:** PHP 8.1+, MySQL 5.7+ / MariaDB 10+
+* **Frontend:** Tailwind CSS (compiled) + Vanilla JS
 
 ---
 
 ## 1. Objective
 
-Membangun website katalog produk + admin panel (mirip referensi) dengan:
+Website katalog produk digital dengan:
 
-* Listing produk cepat, ringan, mobile-friendly
-* Produk pakai **foto portrait** (lebih ideal “screenshot HP” 9:16)
-* Admin panel untuk:
-
-  * Login
-  * CRUD produk
-  * Upload **lebih dari 1 foto** per produk (multi-image)
-  * Manage kategori
-  * Toggle produk aktif/nonaktif
-* Performa cepat (local MySQL, caching header, gambar terkompresi)
+* Listing produk ringan, cepat, mobile-friendly
+* Foto produk portrait (screenshot HP, 9:16)
+* Checkout langsung via **Telegram** (prefilled message)
+* Admin panel untuk CRUD produk, kategori, multi-image upload
+* Analytics sederhana (views, klik Telegram, CTR)
+* Deploy tanpa Node.js — PHP murni, cocok shared hosting cPanel
 
 ---
 
@@ -37,232 +30,181 @@ Membangun website katalog produk + admin panel (mirip referensi) dengan:
 
 **Pages**
 
-1. Home / Catalog (list produk)
-2. Product Detail
-3. Category Page (opsional tapi direkomendasikan)
-4. Search (opsional v1.0, tapi bagus kalau ada)
+1. **Home** — hero section + kategori + produk terbaru
+2. **Katalog** — search, filter kategori, sort, pagination
+3. **Detail Produk** — carousel gambar, deskripsi, produk serupa, CTA order
+4. **Kategori shortlink** (`/c/slug` → redirect ke katalog filtered)
 
 **User Flow**
 
-* User buka homepage → scroll list produk → klik produk → lihat slider gambar → klik “Beli via WhatsApp” → redirect WA dengan prefilled message.
+User buka homepage → scroll produk → klik produk → lihat galeri gambar portrait → klik **"Order Sekarang via Telegram"** → redirect ke Telegram dengan pesan prefilled.
 
 ### 2.2 Admin Panel
 
 **Pages**
 
-1. Login
-2. Dashboard (stat sederhana: jumlah produk, kategori)
-3. Products list (table + actions)
-4. Add product
-5. Edit product
-6. Manage categories
+1. **Login**
+2. **Dashboard** — statistik produk, views, klik TG, CTR, top produk
+3. **Produk** — list + toggle aktif + edit + hapus
+4. **Tambah/Edit Produk** — form + multi image upload
+5. **Kategori** — CRUD inline
 
 **Admin Flow**
 
-* Admin login → add/edit produk → upload multi images → set harga, deskripsi → publish (is_active=true).
+Admin login → tambah/edit produk → upload gambar (max 10) → set badge/jadwal publish → simpan.
 
 ---
 
 ## 3. Requirements
 
-### 3.1 Functional Requirements
+### 3.1 Functional
 
-**FR-01** Catalog menampilkan produk aktif (`is_active=true`)
-**FR-02** Produk memiliki `title, price, description, category, images[]`
-**FR-03** Product detail menampilkan:
+| ID | Requirement |
+|----|-------------|
+| FR-01 | Katalog menampilkan produk aktif (`is_active=1`) yang sudah publish |
+| FR-02 | Produk punya `title, description, category, images[], badge_status` |
+| FR-03 | Detail produk: carousel gambar, lightbox fullscreen, deskripsi, produk serupa |
+| FR-04 | CTA sticky "Order via Telegram" dengan prefilled message |
+| FR-05 | Admin upload **multiple images** (min 1, max 10, JPG/PNG/WEBP, max 2MB/file) |
+| FR-06 | Admin CRUD kategori (nama + auto slug) |
+| FR-07 | Admin toggle produk aktif/nonaktif |
+| FR-08 | Admin set badge (Hot/Ready/Limited/New/None) + jadwal publish |
+| FR-09 | Tracking: view count + klik Telegram per produk |
+| FR-10 | Search produk by title, filter by kategori, sort newest/oldest |
+| FR-11 | Slug URL untuk produk & kategori |
+| FR-12 | Auth admin: session-based + password hashed (bcrypt via `password_hash()`) |
+| FR-13 | Produk serupa otomatis (keyword matching + same category) |
 
-* Slider/carousel gambar (swipe support)
-* Deskripsi
-* Harga
-* Tombol sticky “Beli Sekarang (WA)”
+### 3.2 Non-Functional
 
-**FR-04** Admin bisa upload **multiple images** per product
-
-* Min: 1 image
-* Max: 10 images (configurable)
-
-**FR-05** Admin bisa reorder images (v1 nice-to-have)
-
-* Minimal: set `sort_order` otomatis berdasarkan urutan upload
-* Advanced: drag & drop reorder
-
-**FR-06** Admin CRUD kategori
-**FR-07** Slug URL untuk produk & kategori
-**FR-08** Auth admin (JWT/cookie session) + password hashed (bcrypt)
-
-### 3.2 Non-Functional Requirements
-
-* **NFR-01 Performance:** LCP cepat, list page ringan, lazy-load images
-* **NFR-02 Upload Security:** validasi mime type, size limit, sanitize filename
-* **NFR-03 Image Optimization:** simpan WEBP jika bisa + auto resize max width 1080
-* **NFR-04 SEO Basic:** title/meta OG minimal
-* **NFR-05 Mobile-first:** tampilan nyaman di 360–480px
+| ID | Requirement |
+|----|-------------|
+| NFR-01 | LCP cepat, lazy-load images, ringan di mobile |
+| NFR-02 | Upload: validasi MIME type, size limit, sanitize filename |
+| NFR-03 | SEO: title, meta description, Open Graph, canonical URL |
+| NFR-04 | Mobile-first: nyaman di 360–480px |
+| NFR-05 | Prepared statements (PDO), XSS escape, session-based auth |
 
 ---
 
-## 4. UI/UX (Mobile First)
+## 4. Tech Stack
 
-### 4.1 Mobile Layout Rules
+### 4.1 Backend
 
-* Container max width: `max-w-[480px]` (mobile feel)
-* Desktop: center container, jangan jadi “lebar banget”
-* Produk image: portrait (9:16), full card width
+* PHP 8.1+ (native, tanpa framework)
+* PDO MySQL (prepared statements)
+* `password_hash()` / `password_verify()` (bcrypt)
+* Session-based auth (cookie `PHPSESSID`)
+* `finfo` untuk validasi MIME upload
+* `.env` file parser custom (tanpa dependency eksternal)
 
-### 4.2 Product Image Rules (Screenshot-style)
+### 4.2 Frontend
 
-* Aspect ratio **9:16**
-* CSS: `aspect-[9/16] object-cover`
-* Gunakan thumbnail yang tetap portrait
+* Tailwind CSS (pre-compiled ke `app.css`)
+* Vanilla JS (`app.js`) — carousel, lightbox, ripple, live search, confirm delete
+* Google Fonts: Plus Jakarta Sans + Clash Display
 
-### 4.3 Components
+### 4.3 Server
 
-* Product Card
-* Product Image Carousel
-* Sticky Buy Bar (di bawah)
-* Admin Table
-* Admin Form (input + textarea + upload)
-
----
-
-## 5. Tech Stack (NodeJS Modern, cocok cPanel)
-
-### 5.1 Backend
-
-* Node.js 18+
-* Express.js
-* MySQL
-* Sequelize ORM (recommended)
-* Multer (upload)
-* Sharp (image resize/compress) — recommended
-* bcrypt (password)
-* Auth: JWT in HttpOnly cookie (recommended)
-
-### 5.2 Frontend
-
-**Recommended untuk cPanel stable:**
-
-* EJS templates + TailwindCSS
-* Vanilla JS untuk carousel/slider ringan
-
-(Next.js bisa juga, tapi untuk cPanel kadang lebih ribet; PRD ini fokus opsi paling deploy-friendly.)
+* Apache + mod_rewrite (`.htaccess`)
+* Front controller pattern (`public_html/index.php`)
+* cPanel shared hosting
 
 ---
 
-## 6. Folder Structure (Codex-friendly)
+## 5. Folder Structure
 
-```txt
-lazastore/
-├── app.js
-├── package.json
-├── .env.example
-├── tailwind.config.js
-├── postcss.config.js
-│
-├── src/
-│   ├── config/
-│   │   ├── database.js
-│   │   └── env.js
-│   │
-│   ├── models/
-│   │   ├── Admin.js
-│   │   ├── Category.js
-│   │   ├── Product.js
-│   │   └── ProductImage.js
-│   │
-│   ├── controllers/
-│   │   ├── auth.controller.js
-│   │   ├── admin.controller.js
-│   │   ├── product.controller.js
-│   │   └── category.controller.js
-│   │
-│   ├── routes/
-│   │   ├── public.routes.js
-│   │   ├── admin.routes.js
-│   │   └── api.routes.js
-│   │
-│   ├── middleware/
-│   │   ├── requireAdmin.js
-│   │   ├── uploadImages.js
-│   │   └── errorHandler.js
-│   │
-│   ├── services/
-│   │   ├── image.service.js
-│   │   └── whatsapp.service.js
-│   │
-│   ├── views/
-│   │   ├── layouts/
-│   │   │   ├── public.ejs
-│   │   │   └── admin.ejs
-│   │   ├── public/
-│   │   │   ├── home.ejs
-│   │   │   └── product-detail.ejs
-│   │   └── admin/
-│   │       ├── login.ejs
-│   │       ├── dashboard.ejs
-│   │       ├── products.ejs
-│   │       ├── product-form.ejs
-│   │       └── categories.ejs
-│   │
-│   └── public/
-│       ├── assets/
-│       ├── css/
-│       │   └── app.css
-│       ├── js/
-│       │   └── app.js
-│       └── uploads/
-│           └── products/
-│
-└── scripts/
-    ├── seed-admin.js
-    └── migrate.js
+```
+php-app/
+├── .env                        # environment config (di luar web root)
+├── app/
+│   ├── auth.php                # admin auth functions
+│   ├── config.php              # load env + app config
+│   ├── db.php                  # PDO connection singleton
+│   ├── env.php                 # .env parser
+│   ├── helpers.php             # utility functions, slug, icon SVG, etc.
+│   ├── repo.php                # all database queries + business logic
+│   └── views/
+│       ├── admin_layout.php    # admin layout wrapper
+│       ├── public_layout.php   # public layout wrapper (SEO, OG, nav)
+│       ├── admin/
+│       │   ├── categories.php
+│       │   ├── dashboard.php
+│       │   ├── login.php
+│       │   ├── product_form.php
+│       │   └── products.php
+│       └── public/
+│           ├── catalog.php
+│           ├── detail.php
+│           ├── error.php
+│           └── home.php
+└── public_html/                # document root (cPanel)
+    ├── .htaccess               # rewrite rules
+    ├── index.php               # front controller (all routes)
+    ├── css/
+    │   └── app.css             # compiled Tailwind
+    ├── js/
+    │   └── app.js              # vanilla JS
+    └── uploads/
+        ├── og/                 # OG images
+        └── products/           # product images
 ```
 
 ---
 
-## 7. Database Schema
+## 6. Database Schema
 
-### 7.1 Tables
+### 6.1 Tables
 
 #### `admins`
 
-* id (PK)
-* username (unique)
-* password_hash
-* created_at
+| Column | Type | Notes |
+|--------|------|-------|
+| id | INT UNSIGNED PK AUTO_INCREMENT | |
+| username | VARCHAR(100) UNIQUE | |
+| password_hash | VARCHAR(255) | bcrypt |
+| createdAt | DATETIME | |
 
 #### `categories`
 
-* id (PK)
-* name
-* slug (unique)
-* created_at
+| Column | Type | Notes |
+|--------|------|-------|
+| id | INT UNSIGNED PK AUTO_INCREMENT | |
+| name | VARCHAR(120) | |
+| slug | VARCHAR(140) UNIQUE | auto-generated |
+| createdAt | DATETIME | |
 
 #### `products`
 
-* id (PK)
-* category_id (FK → categories.id)
-* title
-* slug (unique)
-* description
-* price (BIGINT)
-* whatsapp_number (string, optional global default juga boleh)
-* is_active (boolean)
-* created_at
-* updated_at
+| Column | Type | Notes |
+|--------|------|-------|
+| id | INT UNSIGNED PK AUTO_INCREMENT | |
+| category_id | INT UNSIGNED FK → categories.id | |
+| title | VARCHAR(180) | |
+| slug | VARCHAR(220) UNIQUE | auto-generated |
+| description | TEXT | nullable |
+| price | BIGINT UNSIGNED | default 0 |
+| whatsapp_number | VARCHAR(30) | Telegram link/username |
+| is_active | TINYINT(1) | default 1 |
+| badge_status | VARCHAR(20) | none/hot/ready/limited/new |
+| publish_at | DATETIME | nullable, scheduled publish |
+| view_count | INT UNSIGNED | default 0 |
+| telegram_click_count | INT UNSIGNED | default 0 |
+| og_image_path | VARCHAR(255) | nullable |
+| createdAt | DATETIME | |
+| updatedAt | DATETIME | |
 
 #### `product_images`
 
-* id (PK)
-* product_id (FK → products.id)
-* image_path (string)
-* sort_order (int)
-* created_at
+| Column | Type | Notes |
+|--------|------|-------|
+| id | INT UNSIGNED PK AUTO_INCREMENT | |
+| product_id | INT UNSIGNED FK → products.id ON DELETE CASCADE | |
+| image_path | VARCHAR(255) | relative path |
+| sort_order | INT UNSIGNED | default 0 |
+| createdAt | DATETIME | |
 
----
-
-## 8. ERD Diagram (Mermaid)
-
-> Codex bisa langsung pakai ini buat generate migration.
+### 6.2 ERD (Mermaid)
 
 ```mermaid
 erDiagram
@@ -270,14 +212,14 @@ erDiagram
     int id PK
     varchar username "unique"
     varchar password_hash
-    datetime created_at
+    datetime createdAt
   }
 
   CATEGORIES {
     int id PK
     varchar name
     varchar slug "unique"
-    datetime created_at
+    datetime createdAt
   }
 
   PRODUCTS {
@@ -288,9 +230,14 @@ erDiagram
     text description
     bigint price
     varchar whatsapp_number
-    boolean is_active
-    datetime created_at
-    datetime updated_at
+    tinyint is_active
+    varchar badge_status
+    datetime publish_at
+    int view_count
+    int telegram_click_count
+    varchar og_image_path
+    datetime createdAt
+    datetime updatedAt
   }
 
   PRODUCT_IMAGES {
@@ -298,7 +245,7 @@ erDiagram
     int product_id FK
     varchar image_path
     int sort_order
-    datetime created_at
+    datetime createdAt
   }
 
   CATEGORIES ||--o{ PRODUCTS : "has many"
@@ -307,185 +254,113 @@ erDiagram
 
 ---
 
-## 9. Image Upload Requirements (Multi Image = YES)
-
-* Endpoint admin: `POST /admin/products` + `PUT /admin/products/:id`
-* Field upload: `images[]`
-* Max files: 10
-* Max size per file: 2MB (config)
-* Allowed mime: jpg, png, webp
-* Storage: `src/public/uploads/products/`
-* Naming: `{productSlug}-{timestamp}-{index}.webp`
-* After upload:
-
-  * Resize max width 1080px
-  * Convert webp quality 80 (recommended)
-  * Generate thumbnail (optional v1.1)
-
----
-
-## 10. Tailwind UI Design System
-
-### 10.1 Design Goals
-
-* Clean
-* Mobile-first
-* Fokus gambar portrait
-* CTA jelas (“Beli Sekarang”)
-
-### 10.2 Tokens (gunakan Tailwind default + extend)
-
-#### Colors (recommend)
-
-* Background: `slate-950` (dark) / atau `white` (light) — pilih salah satu style, jangan campur
-* Card: `slate-900` (dark) / `white` (light)
-* Text: `slate-100` (dark) / `slate-900` (light)
-* Accent/CTA: `emerald-500` (atau `blue-500`)
-
-**Rekomendasi theme: dark modern (mirip store style banyak)**
-
-* bg: `bg-slate-950`
-* card: `bg-slate-900`
-* border: `border-white/10`
-* text: `text-slate-100`
-* muted: `text-slate-300`
-* CTA: `bg-emerald-500 hover:bg-emerald-400 text-black`
-
-#### Typography
-
-* Title: `text-base font-semibold leading-snug`
-* Price: `text-lg font-bold`
-* Body: `text-sm text-slate-300 leading-relaxed`
-* Button: `text-sm font-semibold`
-
-#### Radius & Shadow
-
-* Card radius: `rounded-2xl`
-* Images radius: `rounded-xl`
-* Shadow: `shadow-lg shadow-black/20`
-
-#### Spacing
-
-* Page padding: `px-4 py-4`
-* Card gap: `gap-3`
-* Section spacing: `space-y-4`
-
-### 10.3 Base Layout Classes
-
-**Mobile container**
-
-* `mx-auto max-w-[480px] px-4`
-
-**Card**
-
-* `rounded-2xl bg-slate-900 border border-white/10 shadow-lg shadow-black/20 overflow-hidden`
-
-**Product image wrapper**
-
-* `aspect-[9/16] w-full bg-black/20`
-  **Image**
-* `h-full w-full object-cover`
-
-**CTA button**
-
-* `w-full rounded-xl bg-emerald-500 text-black py-3 text-sm font-semibold hover:bg-emerald-400 active:scale-[0.99] transition`
-
-**Badges**
-
-* `inline-flex items-center rounded-full px-2 py-1 text-xs bg-white/10 text-slate-200 border border-white/10`
-
-### 10.4 Component Specs (Tailwind)
-
-#### Product Card (public)
-
-* Image 9:16
-* Title 1 line clamp
-* Price prominent
-* Button full width
-
-Suggested structure:
-
-* Card
-
-  * Image
-  * Content: title + price + CTA
-
-#### Product Detail
-
-* Carousel:
-
-  * `overflow-x-auto snap-x snap-mandatory`
-  * item: `snap-center`
-* Sticky buy bar:
-
-  * `fixed bottom-0 left-0 right-0`
-  * container center max width 480
-
-#### Admin Panel (simple & clean)
-
-* Layout: sidebar (desktop) + topbar (mobile)
-* Table responsive: on mobile use stacked cards
-
-Admin form input:
-
-* `w-full rounded-xl bg-slate-950 border border-white/10 px-3 py-3 text-sm text-slate-100 outline-none focus:border-emerald-500/60`
-
----
-
-## 11. API / Routes (Minimal)
+## 7. Routes
 
 ### Public
 
-* `GET /` → list active products
-* `GET /p/:slug` → product detail
-* `GET /c/:slug` → category products (optional)
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/` | Homepage (hero + kategori + produk terbaru) |
+| GET | `/katalog` | Katalog + search/filter/sort/pagination |
+| GET | `/c/:slug` | Redirect ke katalog filtered by category |
+| GET | `/p/:slug` | Detail produk + increment view |
+| GET | `/go/tg/:slug` | Track klik Telegram + redirect |
 
 ### Admin
 
-* `GET /admin/login`
-* `POST /admin/login`
-* `POST /admin/logout`
-* `GET /admin` dashboard
-* `GET /admin/products`
-* `GET /admin/products/new`
-* `POST /admin/products` (multi images)
-* `GET /admin/products/:id/edit`
-* `POST /admin/products/:id` (update + multi images add)
-* `POST /admin/products/:id/delete`
-* `POST /admin/products/:id/toggle`
-* `GET /admin/categories`
-* `POST /admin/categories`
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/admin/login` | Form login |
+| POST | `/admin/login` | Process login |
+| POST | `/admin/logout` | Logout |
+| GET | `/admin` | Dashboard |
+| GET | `/admin/products` | List produk |
+| GET | `/admin/products/new` | Form tambah produk |
+| POST | `/admin/products` | Simpan produk baru |
+| GET | `/admin/products/:id/edit` | Form edit produk |
+| POST | `/admin/products/:id` | Update produk |
+| POST | `/admin/products/:id/delete` | Hapus produk |
+| POST | `/admin/products/:id/toggle` | Toggle aktif/nonaktif |
+| GET | `/admin/categories` | List + form kategori |
+| POST | `/admin/categories` | Tambah kategori |
+| POST | `/admin/categories/:id` | Update kategori |
+| POST | `/admin/categories/:id/delete` | Hapus kategori |
 
 ---
 
-## 12. Deployment Notes (cPanel NodeJS)
+## 8. UI/UX Design System
 
-* Startup file: `app.js`
-* Env via cPanel:
+### 8.1 Layout
 
-  * `DB_HOST=localhost`
-  * `DB_USER=...`
-  * `DB_PASS=...`
-  * `DB_NAME=...`
-  * `JWT_SECRET=...`
-  * `UPLOAD_DIR=src/public/uploads/products`
-* Install:
+* Container: `max-w-[480px] mx-auto` (mobile-feel)
+* Desktop: centered, tidak melebar
+* Product image: portrait 9:16, `object-contain` (tidak di-crop)
 
-  * `npm install`
-* Build Tailwind:
+### 8.2 Theme (Dark Modern)
 
-  * dev: `npm run dev`
-  * prod: `npm run build` (generate compiled CSS ke `src/public/css/app.css`)
+* Background: `bg-slate-950`
+* Card: `bg-slate-900 border border-white/10 rounded-2xl`
+* Text primary: `text-slate-100`
+* Text muted: `text-slate-300`
+* CTA: `bg-emerald-500 hover:bg-emerald-400 text-black`
+* Accent: `text-emerald-300` / `text-cyan-300`
+
+### 8.3 Components
+
+* **Product Card** — image 9:16, title, Detail + TG buttons
+* **Badge Chip** — Hot (red), Ready (green), Limited (amber), New (blue)
+* **Carousel** — swipe + prev/next buttons + thumbnail grid
+* **Lightbox** — fullscreen image viewer
+* **CTA Dock** — sticky bottom bar "Order via Telegram"
+* **Bottom Nav** — Beranda / Katalog / Admin (3 tabs)
+* **Admin Cards** — stat cards, product list cards, inline category forms
+
+### 8.4 Typography
+
+* Title: Plus Jakarta Sans 600/700
+* Display: Clash Display 600/700
+* Body: `text-sm` (14px)
 
 ---
 
-## 13. Acceptance Criteria
+## 9. Image Upload
 
-* Mobile view rapi & cepat
-* Produk tampil portrait 9:16 dan konsisten
-* Admin dapat upload **>1 image** per produk dan muncul di detail carousel
-* CRUD produk & kategori jalan
-* Deploy di cPanel NodeJS tanpa error
-* Load page cepat (lazy loading + webp recommended)
+* Field: `images[]` (multi-file)
+* Max: 10 files per produk
+* Max size: 2MB per file
+* Allowed: `image/jpeg`, `image/png`, `image/webp`
+* Validasi: `finfo` MIME check
+* Naming: `{slug}-{timestamp}-{index}.{ext}`
+* Storage: `public_html/uploads/products/`
+* Sort order: auto berdasarkan urutan upload
 
 ---
+
+## 10. Deploy (cPanel PHP)
+
+1. Upload `php-app/` ke server
+2. Set document root ke `php-app/public_html/`
+3. Buat `.env` di `php-app/` dengan kredensial DB
+4. Buat database + jalankan schema SQL
+5. Buka `/seed-admin.php` untuk buat admin → hapus file setelah selesai
+6. Set permission `755` pada folder `public_html/uploads/`
+7. Pastikan `mod_rewrite` aktif
+
+---
+
+## 11. Acceptance Criteria
+
+- [ ] Homepage menampilkan kategori + produk terbaru
+- [ ] Katalog: search, filter kategori, sort, pagination berfungsi
+- [ ] Detail produk: carousel swipe, lightbox, deskripsi, produk serupa
+- [ ] CTA "Order via Telegram" redirect dengan pesan yang benar
+- [ ] Admin login/logout berfungsi
+- [ ] Admin CRUD produk + multi image upload
+- [ ] Admin CRUD kategori
+- [ ] Toggle aktif/nonaktif produk
+- [ ] Badge + scheduled publish berfungsi
+- [ ] View count + klik Telegram tracking
+- [ ] Dashboard analytics menampilkan data yang benar
+- [ ] Deploy di cPanel tanpa error
+- [ ] Mobile responsive (360–480px)
+- [ ] Cache busting pada CSS/JS assets

@@ -28,8 +28,9 @@
   <meta property="twitter:description" content="<?= e($metaDesc) ?>" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Clash+Display:wght@600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="<?= e(local_url('/css/app.css')) ?>?v=<?= filemtime(__DIR__ . '/../../public/css/app.css') ?: time() ?>" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Clash+Display:wght@600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Clash+Display:wght@600;700&display=swap" rel="stylesheet" /></noscript>
+  <link rel="stylesheet" href="<?= e(local_url('/css/app.css')) ?>?v=<?= filemtime(__DIR__ . '/../../public_html/css/app.css') ?: time() ?>" />
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen">
   <?php
@@ -37,11 +38,6 @@
   $isCatalog = str_starts_with($cp, '/katalog') || str_starts_with($cp, '/p/') || str_starts_with($cp, '/c/');
   $pbClass = str_starts_with($cp, '/p/') ? 'pb-52' : 'pb-28';
   ?>
-  <div class="ambient-wrap pointer-events-none fixed inset-0">
-    <span class="ambient-orb ambient-orb-cyan"></span>
-    <span class="ambient-orb ambient-orb-emerald"></span>
-    <span class="ambient-orb ambient-orb-indigo"></span>
-  </div>
   <div class="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_15%_5%,rgba(14,165,233,0.12),transparent_35%),radial-gradient(circle_at_85%_20%,rgba(16,185,129,0.10),transparent_40%)]"></div>
 
   <div class="mx-auto max-w-[480px] px-4 py-4 <?= e($pbClass) ?> space-y-4">
@@ -78,7 +74,7 @@
     </div>
   </nav>
 
-  <script src="<?= e(local_url('/js/app.js')) ?>?v=<?= filemtime(__DIR__ . '/../../public/js/app.js') ?: time() ?>"></script>
+  <script src="<?= e(local_url('/js/app.js')) ?>?v=<?= filemtime(__DIR__ . '/../../public_html/js/app.js') ?: time() ?>" defer></script>
 </body>
 </html>
 

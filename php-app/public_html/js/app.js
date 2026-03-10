@@ -61,26 +61,7 @@ function bindRipple(target) {
   if (!target || target.dataset.rippleBound === "1") {
     return;
   }
-
   target.dataset.rippleBound = "1";
-  target.classList.add("fx-ripple");
-
-  target.addEventListener("pointerdown", (event) => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      return;
-    }
-
-    const rect = target.getBoundingClientRect();
-    const size = Math.max(rect.width, rect.height) * 0.7;
-    const dot = document.createElement("span");
-    dot.className = "fx-ripple-dot";
-    dot.style.width = `${size}px`;
-    dot.style.height = `${size}px`;
-    dot.style.left = `${event.clientX - rect.left}px`;
-    dot.style.top = `${event.clientY - rect.top}px`;
-    target.appendChild(dot);
-    window.setTimeout(() => dot.remove(), 650);
-  });
 }
 
 function initMicroInteractions(root = document) {
@@ -90,34 +71,8 @@ function initMicroInteractions(root = document) {
   rippleTargets.forEach(bindRipple);
 }
 
-function initCardTilt(root = document) {
-  const canTilt = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
-  if (!canTilt) {
-    return;
-  }
-
-  const cards = root.querySelectorAll(".product-card");
-  cards.forEach((card) => {
-    if (card.dataset.tiltBound === "1") {
-      return;
-    }
-
-    card.dataset.tiltBound = "1";
-    card.addEventListener("pointermove", (event) => {
-      const rect = card.getBoundingClientRect();
-      const px = (event.clientX - rect.left) / rect.width;
-      const py = (event.clientY - rect.top) / rect.height;
-      const tiltY = (px - 0.5) * 5.5;
-      const tiltX = (0.5 - py) * 4.8;
-      card.style.setProperty("--pc-tilt-x", `${tiltX.toFixed(2)}deg`);
-      card.style.setProperty("--pc-tilt-y", `${tiltY.toFixed(2)}deg`);
-    });
-
-    card.addEventListener("pointerleave", () => {
-      card.style.setProperty("--pc-tilt-x", "0deg");
-      card.style.setProperty("--pc-tilt-y", "0deg");
-    });
-  });
+function initCardTilt() {
+  // Card tilt removed for performance
 }
 
 function showToast(message) {
@@ -276,7 +231,6 @@ function initCatalogLiveSearch() {
       window.history.replaceState({}, "", `${url.pathname}${url.search}`);
       initRevealAnimations(document);
       initMicroInteractions(document);
-      initCardTilt(document);
     } catch (error) {
       if (error.name !== "AbortError") {
         form.submit();
@@ -556,4 +510,4 @@ initProductCarousel();
 initProductLightbox();
 initRevealAnimations(document);
 initMicroInteractions(document);
-initCardTilt(document);
+initCardTilt();
